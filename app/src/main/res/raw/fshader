@@ -1,0 +1,18 @@
+precision mediump float;
+varying vec2 texCoords;
+varying vec3
+uniform sampler2D texture_diffuse;
+
+
+
+void main()
+{
+
+    vec4 lighting_color=vec4(1.0,0.0,1.0,1.0);
+    //vec4 lighting_pos=vec4();
+    float ambientStrength=0.2;
+    vec4 ambient=ambientStrength*lighting_color;
+
+    gl_FragColor=lighting_color*texture2D(texture_diffuse,texCoords);
+    //gl_FragColor=vec4(0.5,0.0,0.0,0.3);
+}
