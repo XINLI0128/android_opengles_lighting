@@ -30,6 +30,33 @@ void Shape::loadTexture(const string s)
 }
 
 
+void Shape::loadTexture()
+{
+               const GLuint SHADOW_WIDTH=1024,SHADOW_HEIGHT=1024;
+               //GLuint depthMapFBO;
+               glGenFramebuffers(1,&depthMapFBO);
+               glBindFramebuffer(GL_FRAMEBUFFER,depthMapFBO);
+
+
+
+               //GLint depthMap;
+               glGenTextures(1, &textureID);
+               glBindTexture(GL_TEXTURE_2D, textureID);
+               glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+               glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,textureID,0);
+
+               //glDrawBuffer(GL_NONE);
+               //glReadBuffer(GL_NONE);
+               glBindFramebuffer(GL_FRAMEBUFFER,0);
+}
+
+
+
 void Shape::initVertex(float *vertexArray, float *texCoordsArray, float *normalArray) {
 
     mVertexArray=new GLfloat[sizeof(vertexArray)];
@@ -44,24 +71,43 @@ void Shape::initGL(const char *vertexShaderCode, const char *fragmentShaderCode,
 
     shader.create(vertexShaderCode,fragmentShaderCode);
     mProgram=shader.getID();
-    loadTexture(texture_path);
+    //loadTexture(texture_path);
+    loadTexture();
 }
 
-void Shape::draw(float *model,float *view, float *projection, int i) {
+
+void Shape::draw(float *model,float *view, float *projection, Camera camera, int i) {
     //glUseProgram(mProgram);
+   // glEnable(GL_CULL_FACE);
+   // glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_CULL_FACE);
+    //glDepthFunc(GL_LEQUAL);
+    //glFrontFace(GL_CCW);
     shader.use();
      //loadTexture(texture_path);
-     mUMVPMatrixHandle=glGetUniformLocation(mProgram,"uMVPMatrix");
+     loadTexture();
+     viewPosHandle=glGetUniformLocation(mProgram,"viewPos");
+     modelHandle=glGetUniformLocation(mProgram,"model");
+     viewHandle=glGetUniformLocation(mProgram,"view");
+     projectionHandle=glGetUniformLocation(mProgram,"projection");
      mAPositionHandle=glGetAttribLocation(mProgram,"aPosition");
      mATexCoordsHandle=glGetAttribLocation(mProgram,"aTexCoords");
      mANormalHandle=glGetAttribLocation(mProgram,"aNormal");
      mTexture=glGetUniformLocation(mProgram,"texture_diffuse");
+     lightPosHandle=glGetUniformLocation(mProgram,"lightPos");
+
 
      glVertexAttribPointer(mAPositionHandle,3,GL_FLOAT,GL_FALSE,3*sizeof(GLfloat),mVertexArray);
      glVertexAttribPointer(mATexCoordsHandle,2,GL_FLOAT,GL_FALSE,2*sizeof(GLfloat),mTexArray);
      glVertexAttribPointer(mANormalHandle,3,GL_FLOAT,GL_FALSE,3*sizeof(GLfloat),mNormalArray);
 
-    glUniformMatrix4fv(mUMVPMatrixHandle,1,GL_FALSE,mvpMatrix);
+    glUniformMatrix4fv(modelHandle,1,GL_FALSE,model);
+    glUniformMatrix4fv(viewHandle,1,GL_FALSE,view);
+    glUniformMatrix4fv(projectionHandle,1,GL_FALSE,projection);
+    glUniform3f(lightPosHandle,camera.Position.x,camera.Position.y,camera.Position.z);
+    glUniform3f(viewPosHandle,camera.Position.x,camera.Position.y,camera.Position.z);
+
     //glVertexAttribPointer(mAPositionHandle,3,GL_FLOAT,GL_FALSE,5*sizeof(GLfloat),mVertexArray);
     //glVertexAttribPointer(mATexCoordsHandle,2,GL_FLOAT,GL_FALSE,5*sizeof(GLfloat),mVertexArray+3*sizeof(GLfloat));
     glEnableVertexAttribArray(mAPositionHandle);

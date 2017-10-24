@@ -46,12 +46,12 @@ class MySurfaceView extends GLSurfaceView {
 
                 float rate=Math.abs(dy)/Math.abs(dx);
 
-              /*  if(dy>0 && rate>0.5)
+               /*if(dy>0 && rate>0.5)
                 {
                     mRenderer.flag=true;
-                    mRenderer.rotateY+=2;
+                    mRenderer.rotateY += 2;
                 }
-                if(dy<0 && dy/dx>0.5)
+                if(dy<0 && rate>0.5)
                 {
                     mRenderer.flag=true;
                     mRenderer.rotateY -= 2;
@@ -59,7 +59,7 @@ class MySurfaceView extends GLSurfaceView {
                 if(dx>0 && rate<0.5)
                 {
                     mRenderer.flag=false;
-                    mRenderer.rotateX+=2;
+                    mRenderer.rotateX += 2;
                 }
                 if(dx<0 && rate<0.5)
                 {

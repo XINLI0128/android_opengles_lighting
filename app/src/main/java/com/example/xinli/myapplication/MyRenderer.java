@@ -41,16 +41,19 @@ public class MyRenderer implements GLSurfaceView.Renderer {
     {
 
         //glClearColor(1.0f,0.0f,0.0f,0.0f);
-        String vertexShaderStr=LoadShaderStr(mContext, R.raw.vshader);
-        String fragmentShaderStr=LoadShaderStr(mContext, R.raw.fshader);
+        String vertexShaderStr=LoadShaderStr(mContext, R.raw.vshadow);
+        String fragmentShaderStr=LoadShaderStr(mContext, R.raw.fshadow);
         //nativeInit(vertexShaderStr,fragmentShaderStr);
 
-        String vertexShaderStrSkybox=LoadShaderStr(mContext,R.raw.vplane);
-        String fragmentShaderStrSkybox=LoadShaderStr(mContext,R.raw.fplane);
+        String vertexShaderStrSkybox=LoadShaderStr(mContext,R.raw.vshadow);
+        String fragmentShaderStrSkybox=LoadShaderStr(mContext,R.raw.fshadow);
 
-        String vertexShaderForModel=LoadShaderStr(mContext,R.raw.vmodel);
-        String fragmentShaderForModel=LoadShaderStr(mContext,R.raw.fmodel);
-        nativeInit(vertexShaderStr,fragmentShaderStr,vertexShaderStrSkybox,fragmentShaderStrSkybox,vertexShaderForModel,fragmentShaderForModel);
+        String vertexShaderForModel=LoadShaderStr(mContext,R.raw.vquad);
+        String fragmentShaderForModel=LoadShaderStr(mContext,R.raw.fquad);
+
+        String vertexShaderLight=LoadShaderStr(mContext,R.raw.vlight);
+        String fragmentShaderLight=LoadShaderStr(mContext,R.raw.flight);
+        nativeInit(vertexShaderStr,fragmentShaderStr,vertexShaderStrSkybox,fragmentShaderStrSkybox,vertexShaderForModel,fragmentShaderForModel,vertexShaderLight,fragmentShaderLight);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class MyRenderer implements GLSurfaceView.Renderer {
         System.loadLibrary("native-lib");
     }
 
-    public static native void nativeInit(String vertexShaderCode, String fragmentShaderCode, String vertexShaderCodeSkybox, String fragmentShaderCodeSkybox, String vertexShaderForModel, String fragmentShaderForModel);
+    public static native void nativeInit(String vertexShaderCode, String fragmentShaderCode, String vertexShaderCodeSkybox, String fragmentShaderCodeSkybox, String vertexShaderForModel, String fragmentShaderForModel,String vertexShaderLight, String fragmentShaderLight);
 
     //private static native void nativeDraw(float AngleX, float AngleY,boolean flag);
     private static native void nativeDraw(float xoffset, float yoffset);

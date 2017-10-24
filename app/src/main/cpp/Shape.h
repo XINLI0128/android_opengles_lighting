@@ -10,6 +10,7 @@
 #include <GLES3/gl3.h>
 #include "shader.h"
 #include <string>
+#include "camera.h"
 
 using namespace std;
 
@@ -19,10 +20,16 @@ class Shape
 {
 public:
     GLuint textureID;
-    GLint mTexture;
+
+    GLuint mTexture;
     GLint mTexture1;
+    GLint viewPosHandle;
+    GLint lightPosHandle;
+    GLuint depthMapFBO;
     GLint mProgram;
-    GLint mUMVPMatrixHandle;
+    GLint modelHandle;
+    GLint viewHandle;
+    GLint projectionHandle;
     GLint mAPositionHandle;
     GLint mANormalHandle;
     GLint mATexCoordsHandle;
@@ -32,8 +39,9 @@ public:
     Shape(float *vertexArray, float *texCoordsArray,float *normalArray);
     void initVertex(float *vertexArray, float *texCoordsArray,float *normalArray);
     void initGL(const char * vertexShaderCode, const char * fragmentShaderCode, const string texture_path);
-    void draw(float mvpMatrix[],int i);
+    void draw(float *model,float *view, float *projection,Camera camera,int i);
     void loadTexture(string s);
+    void loadTexture();
     virtual ~Shape();
     Shader shader;
 
