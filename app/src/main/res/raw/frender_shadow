@@ -1,0 +1,51 @@
+out vec4 FragColor
+in vec3 FragPos;
+in vec3 normal;
+in vec2 texCoords;
+in vec4 FragPosLightSpace;
+
+uniform sampler2D texture_diffuse;
+uniform sampler2D texture_shadow;
+
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+
+float ShadowCalculation(vec4 FragPosLightSpace)
+{
+    vec4 currentPos=0.5*FragPosLightSpace+0.5;
+    float currentDepth=currentPos.z;
+    float nearestDepth=texture2D(texture_shadow,TexCoords).r;
+
+    if(currentDepth>nearestDepth)
+        return 1.0;
+     else
+        return 0.0;
+
+}
+void main()
+{
+    vec4 lighting_pos=vec4(lightPos,1.0);
+    vec4 lighting_color=vec4(0.0,0.6,0.0,1.0);
+
+
+    float ambientStrength=0.5;
+    vec4 ambient=ambientStrength*lighting_color;
+
+
+    vec3 norm=normalize(normal);
+    vec4 lightDir=normalize(lighting_pos-FragPos);
+    float a=max(dot(vec4(norm,1.0),lightDir),0.0);
+    vec4 diffuse=a*vec4(0.0,0.7,0.0,1.0);
+
+
+    float specularStrength=0.5;
+    vec4 viewDir=normalize(vec4(viewPos,1.0)-FragPos);
+    vec4 reflectDir=reflect(-lightDir,vec4(norm,1.0));
+    //max(dot(viewDir, reflectDir), 0.0)
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec4 specular = specularStrength * spec * vec4(1.0,1.0,1.0,1.0);
+
+    float rate=1.0-ShadowCalculation(FragPosLightSpace);
+
+    Fragcolor=(ambient+rate*(diffuse+specular))*texture2D(texture_diffuse,);
+}

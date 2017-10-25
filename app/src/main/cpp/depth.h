@@ -11,6 +11,8 @@ class Depth
      //GLint depthMapFBO;
      public:
         GLuint depthMap;
+
+
      GLint createBuffer()
      {
         GLuint depthMapFBO;

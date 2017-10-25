@@ -72,21 +72,15 @@ void Shape::initGL(const char *vertexShaderCode, const char *fragmentShaderCode,
     shader.create(vertexShaderCode,fragmentShaderCode);
     mProgram=shader.getID();
     //loadTexture(texture_path);
-    loadTexture();
+    //loadTexture();
 }
 
 
 void Shape::draw(float *model,float *view, float *projection, Camera camera, int i) {
-    //glUseProgram(mProgram);
-   // glEnable(GL_CULL_FACE);
-   // glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
-    //glDepthFunc(GL_LEQUAL);
-    //glFrontFace(GL_CCW);
+
     shader.use();
      //loadTexture(texture_path);
-     loadTexture();
+     //loadTexture();
      viewPosHandle=glGetUniformLocation(mProgram,"viewPos");
      modelHandle=glGetUniformLocation(mProgram,"model");
      viewHandle=glGetUniformLocation(mProgram,"view");
@@ -114,15 +108,12 @@ void Shape::draw(float *model,float *view, float *projection, Camera camera, int
     glEnableVertexAttribArray(mATexCoordsHandle);
     glEnableVertexAttribArray(mANormalHandle);
 
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
     glUniform1i(mTexture,0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    //glBindTexture(GL_TEXTURE_2D, textureID);
 
     glDrawArrays(GL_TRIANGLES,0,i);
-    //glEnableVertexAttribArray(0);
-    //glEnableVertexAttribArray(mATexCoordsHandle);
 
-    //glBindTexture(GL_TEXTURE_2D,0);
 }
 
 Shape::Shape(float *vertexArray, float *texCoordsArray, float *normalArray) {

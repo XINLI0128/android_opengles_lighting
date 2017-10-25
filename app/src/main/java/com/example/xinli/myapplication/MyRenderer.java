@@ -53,6 +53,7 @@ public class MyRenderer implements GLSurfaceView.Renderer {
 
         String vertexShaderLight=LoadShaderStr(mContext,R.raw.vlight);
         String fragmentShaderLight=LoadShaderStr(mContext,R.raw.flight);
+
         nativeInit(vertexShaderStr,fragmentShaderStr,vertexShaderStrSkybox,fragmentShaderStrSkybox,vertexShaderForModel,fragmentShaderForModel,vertexShaderLight,fragmentShaderLight);
     }
 

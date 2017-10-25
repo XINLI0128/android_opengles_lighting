@@ -13,7 +13,6 @@ void main()
 {
     float depthValue=texture2D(texture_diffuse,texCoords).r;
     float t=LinearizeDepth(depthValue);
-    gl_FragColor=vec4(vec3(t),1.0);
-    //gl_FragColor=vec4(1.0,1.0,1.0,1.0);
-    gl_FragColor=texture2D(texture_diffuse,texCoords);
+    //gl_FragColor=vec4(vec3(t),1.0);
+    gl_FragColor=vec4(vec3(depthValue),1.0);
 }

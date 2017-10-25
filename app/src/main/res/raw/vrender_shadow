@@ -1,0 +1,27 @@
+#version 300 es
+precision lowp float;
+in vec3 aPosition;
+in vec3 aNormal;
+in vec2 aTexCoords;
+
+
+out vec3 FragPos;
+out vec3 normal;
+out vec2 texCoords;
+out vec4 FragPosLightSpace;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 lightSpaceMatrix
+void main()
+{
+       gl_Position=projection*view*model*aPosition;
+       FragPos=vec3(model*vec4(aPosition,1.0));
+       Normal=transpose(inverse(mat3(model)))*normal;
+
+       TexCoords=aTexCoords;
+       FragPosLightSpace=lightSpaceMatrix*vec4(FragPos,1.0);
+
+
+}

@@ -196,7 +196,10 @@ Shape mLight(cubeVertices,cubeTexCoords,cubeNormal);
 Camera light_camera(glm::vec3(0.0f,1.0f,0.0f));
 glm::vec3 lightPos(1.0f,1.0f,0.0f); //-2.0,3.0,2.0
 
-GLint depthMapFBO;
+
+GLuint depthMap;
+GLuint depthMapFBO;
+
 
 using namespace std;
 
@@ -225,7 +228,7 @@ Java_com_example_xinli_myapplication_MyRenderer_nativeInit(
     const char *vertexShaderCodeLight=env->GetStringUTFChars(vertexShaderCode_light,0);
     const char *fragmentShaderCodeLight=env->GetStringUTFChars(fragmentShaderCode_light,0);
 
-    depthMapFBO=depth.createBuffer();
+    //depthMapFBO=depth.createBuffer();
 
 
     //mShape.initGL(vertexShaderCode, fragmentShaderCode,"sdcard/image/front.jpg");
@@ -233,9 +236,8 @@ Java_com_example_xinli_myapplication_MyRenderer_nativeInit(
     mShape.initGL(vertexShaderCode, fragmentShaderCode,"");
     //Airplane.initGL(vertexShaderCodeModel,fragmentShaderCodeModel);
     //Airplane.Create("/sdcard/image/FREOBJ.obj");
-    mQuad.initGL(vertexShaderCodeModel,fragmentShaderCodeModel,"");
+    mQuad.initGL(vertexShaderCodeModel,fragmentShaderCodeModel,"sdcard/image/front.jpg");
     mLight.initGL(vertexShaderCodeLight,fragmentShaderCodeLight,"");
-
 
     env->ReleaseStringUTFChars(vertexShaderCode_, vertexShaderCode);
     env->ReleaseStringUTFChars(fragmentShaderCode_, fragmentShaderCode);
@@ -245,12 +247,31 @@ Java_com_example_xinli_myapplication_MyRenderer_nativeInit(
     env->ReleaseStringUTFChars(fragmentShaderCode_Model, fragmentShaderCodeModel);
     env->ReleaseStringUTFChars(vertexShaderCode_light, vertexShaderCodeLight);
     env->ReleaseStringUTFChars(fragmentShaderCode_light, fragmentShaderCodeLight);
-
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glEnable(GL_CULL_FACE);
-    //glEnable(GL_DEPTH_TEST);
     glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
+
+
+                /*glGenFramebuffers(1,&depthMapFBO);
+                glBindFramebuffer(GL_FRAMEBUFFER,depthMapFBO);
+
+
+
+                //GLint depthMap;
+                glGenTextures(1, &depthMap);
+                //glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, depthMap);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,depthMap,0);
+                unsigned int attachments[1]={GL_COLOR_ATTACHMENT0};
+                //glDrawBuffers(1, attachments);
+
+                //glDrawBuffer(GL_NONE);
+                //glReadBuffer(GL_NONE);
+                glBindFramebuffer(GL_FRAMEBUFFER,0);*/
 
 }
 
@@ -266,6 +287,33 @@ Java_com_example_xinli_myapplication_MyRenderer_nativeDraw(
     glm::mat4 lightProjection,lightView;
     glm::mat4 lightSpaceMatrix;
     float near_plane=1.0f,far_plane=7.5f;
+
+
+    GLuint depthMap;
+    GLuint depthMapFBO;
+            glGenFramebuffers(1,&depthMapFBO);
+            glBindFramebuffer(GL_FRAMEBUFFER,depthMapFBO);
+
+
+
+            //GLint depthMap;
+            glGenTextures(1, &depthMap);
+            //glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, depthMap);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,depthMap,0);
+            unsigned int attachments[1]={GL_COLOR_ATTACHMENT0};
+            //glDrawBuffers(1, attachments);
+
+            //glDrawBuffer(GL_NONE);
+            //glReadBuffer(GL_NONE);
+            glBindFramebuffer(GL_FRAMEBUFFER,0);
+
     lightProjection=glm::ortho(-2.0f,2.0f,-2.0f,2.0f,near_plane,far_plane);
     lightView=glm::lookAt(lightPos,glm::vec3(0.0f),glm::vec3(1.0,0.0,0.0));
     //lightView=light_camera.GetViewMatrix();
@@ -287,18 +335,23 @@ Java_com_example_xinli_myapplication_MyRenderer_nativeDraw(
     //view=glm::mat4();
 
 
-    glEnable(GL_DEPTH_TEST);
-    glViewport(0,0,Width,Height);
-    glBindFramebuffer(GL_FRAMEBUFFER,mQuad.depthMapFBO);
-        glClear(GL_DEPTH_BUFFER_BIT);
 
-        mShape.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(lightView),(float *)glm::value_ptr(lightProjection),light_camera,36);
+    glViewport(0,0,Width,Height);
+    glBindFramebuffer(GL_FRAMEBUFFER,depthMapFBO);
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_DEPTH_BUFFER_BIT);
+         //mShape.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(lightView),(float *)glm::value_ptr(lightProjection),light_camera,36);
 
 
         model=glm::mat4();
         mvpMatrix=projection*view*model;
         mvp=(float *) glm::value_ptr(mvpMatrix);
+
         mPlane.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(lightView),(float *)glm::value_ptr(lightProjection),light_camera,6);
+        //model=glm::scale(model,glm::vec3(0.5,0.5,0.5));
+
+        mShape.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(lightView),(float *)glm::value_ptr(lightProjection),light_camera,36);
+
 
 
         //model=glm::translate(model,glm::vec3(lightPos.x,lightPos.y,lightPos.z));
@@ -306,13 +359,15 @@ Java_com_example_xinli_myapplication_MyRenderer_nativeDraw(
         //mLight.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(view),(float *)glm::value_ptr(lightProjection),light_camera,6);
     glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-    /*glViewport(0,0,Width,Height);
+    glViewport(0,0,Width,Height);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D,depth.depthMap);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,depthMap);
+
+    //mQuad.textureID=depthMap;
     model=glm::mat4();
-    mQuad.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(view),(float *)glm::value_ptr(projection),camera,6);*/
+    mQuad.draw((float *)glm::value_ptr(model),(float *)glm::value_ptr(view),(float *)glm::value_ptr(projection),camera,6);
 
 }
 
